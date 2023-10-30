@@ -1,0 +1,77 @@
+const router = require('express').Router();
+const User = require('../models/usermodel');
+
+// Read user details (All users)
+router.get('/users', (req, res) => {
+  User.find()
+    .then(users => res.json(users))
+    .catch(err => res.status(400).json('Error: ' + err));
+});
+
+// Create a new user
+router.post('/users/add', (req, res) => {
+  const { name, telephone, email, password } = req.body;
+
+  const newUser = new User({
+    name,
+    telephone,
+    email,
+    password,
+  });
+
+  newUser.save()
+    .then(() => res.json('User added!'))
+    .catch(err => res.status(400).json('Error: ' + err));
+});
+
+// Delete a user by ID
+router.delete('/users/delete/:id', (req, res) => {
+  User.findByIdAndDelete(req.params.id)
+    .then(() => res.json('User Deleted.'))
+    .catch(err => res.status(400).json('Error: ' + err));
+});
+
+// Get a user by ID
+router.get('/users/get/:id', async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    res.status(200).json({ status: 'User details fetched', user });
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).json({ status: 'Error with user details fetch', error: err.message });
+  }
+});
+
+// Update user details by ID
+router.post('/users/update/:id', (req, res) => {
+  User.findByIdAndUpdate(req.params.id, req.body, { new: true })
+    .then(updatedUser => {
+      if (!updatedUser) {
+        return res.status(404).json('User not found');
+      }
+      res.json('User updated!');
+    })
+    .catch(err => res.status(400).json('Error: ' + err));
+});
+
+// User login
+router.post('/users/login', (req, res) => {
+  const { name, password } = req.body;
+
+  User.findOne({ name, password })
+    .then(user => {
+      if (user) {
+        // Login successful
+        res.json({ message: 'Login successful' });
+      } else {
+        // Invalid username or password
+        res.status(401).json({ message: 'Invalid username or password' });
+      }
+    })
+    .catch(error => {
+      // Error occurred during database query
+      res.status(500).json({ message: 'Internal server error' });
+    });
+});
+
+module.exports = router;
