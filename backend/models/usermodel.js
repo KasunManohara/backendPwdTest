@@ -1,25 +1,31 @@
+//Model of user collection
+
+
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const userSchema = new Schema({
-    name: {
+//create user object
+const UserSchema = new Schema ({
+    name:{
         type: String,
-        required: true,
+        required: true
     },
-    telephone: {
-        type: String,
-        required: true,
+    telephone:{
+        type : String,
+        required: true
+        
     },
-    email: {
-        type: String,
-        required: true,
-        unique: true,
+    email:{
+        type : String,
+        required: true
     },
-    password: {
+    
+    password:{
         type: String,
-        required: true,
+        required: true
     }
-});
+    
+})
 
-const User = mongoose.model("User", userSchema);
-module.exports = User;
+const user = mongoose.model("user" ,UserSchema );
+module.exports = user;

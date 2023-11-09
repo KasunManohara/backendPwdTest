@@ -1,30 +1,24 @@
-const dotenv = require("dotenv");
-dotenv.config();
-
 const express = require('express');
-const app = express();
-const port = process.env.PORT || 3000;
-
-// mongoose, body-parser, cors
+const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 
-//define routes
-const userRouter = require('./models/usermodel');
+dotenv.config();
 
-// mongoose
+const app = express();
+
 mongoose.set('strictQuery', true);
 
-// app middleware
 app.use(bodyParser.json());
 app.use(cors());
 
-// create a database connection
+//app middleware
+const port = process.env.PORT || 3000;
 const URL = process.env.DB_URL;
 mongoose.connect(URL, {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
 });
 
 // Check the connection status
@@ -33,7 +27,8 @@ connection.once("open", () => {
     console.log("MongoDB connection success!");
 });
 
-//add user details
+//define routes
+const userRouter = require('./routes/userroute');
 app.use('/user', userRouter);
 
 // Start the server
